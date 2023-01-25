@@ -1,10 +1,39 @@
 import { galleryItems } from "./gallery-items.js";
 
-
 const galleryContainer = document.querySelector(".gallery");
 const gallaryCards = createGalleryItemCard(galleryItems);
 galleryContainer.insertAdjacentHTML("beforeend", gallaryCards);
-galleryContainer.addEventListener("click", onGalleryCardClick);
+galleryContainer.addEventListener("click", openModalEvent);
+
+
+function openModalEvent(e) {
+  // const isLinkFromGalleryItem = evt.target.closest(".gallery__link");
+  // if (!isLinkFromGalleryItem) {return;}
+  if (e.target.nodeName !== "IMG") {
+    return;
+  }
+  e.preventDefault();
+
+  const handleModalCloseOnEscape = (e) => {
+    e.preventDefault();
+    if (e.code === "Escape") {
+      openModal.close();
+    }
+  };
+
+  const openModal = basicLightbox.create(
+    `<img width="600" height="800" src="${getUrlOfLagreImage(e)}">`,
+    {
+      onShow: (modalWithLargeImage) => {
+        document.body.addEventListener("keydown", handleModalCloseOnEscape);
+      },
+      onClose: (modalWithLargeImage) => {
+        document.body.removeEventListener("keydown", handleModalCloseOnEscape);
+      },
+    }
+  );
+  openModal.show();
+};
 
 function createGalleryItemCard(items) {
   return items
@@ -20,24 +49,13 @@ function createGalleryItemCard(items) {
           alt="${description}"          
         />
       </a>
-    </div>`;
+    </div>`
     })
     .join("");
-}
+};
 
-function onGalleryCardClick (evt) {   
-    
-    const isLinkGalleryItem = evt.target.parentElement.classList.contains('gallery__link');
-    const urlLagreImage = evt.target.dataset.source;
-
-if (!isLinkGalleryItem) {
-  return;
-}
-
-   
-    console.log('Large image url: ', urlLagreImage);
-    return urlLagreImage;
-
+function getUrlOfLagreImage(e) {  
+  return e.target.dataset.source;
 };
 
 
